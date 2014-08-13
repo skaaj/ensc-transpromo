@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Twig template</title>
+    </head>
+    <body>
+        <p>Hello from Twig!</p>
+        {% for item in table %}
+            <li><a href="{{ item.id }}">{{ item.value }}</a></li>
+        {% endfor %}
+    </body>
+</html>
