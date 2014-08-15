@@ -4,9 +4,11 @@
         <title>Twig template</title>
     </head>
     <body>
-        <p>Hello from Twig!</p>
-        {% for item in table %}
-            <li><a href="{{ item.id }}">{{ item.value }}</a></li>
-        {% endfor %}
+        {% include 'nav.html.twig' %}
+        {% if user %}
+            <p>connected as {{ user.prenom }}</p>
+        {% else %}
+            <p>unconnected</p>
+        {% endif %}
     </body>
 </html>

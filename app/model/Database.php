@@ -18,7 +18,26 @@ class Database {
         }
     }
 
-    protected function load($db){
-    	$this->pdo = $db->pdo;
+    protected function load($db)
+    {
+        $this->pdo = $db->pdo;
+    }
+
+    public function fetch_one(\PDOStatement $query)
+    {
+        if ($query->rowCount() != 1) {
+            return false;
+        } else {
+            return $query->fetch();
+        }
+    }
+
+    public function fetch_all(\PDOStatement $query)
+    {
+        return $query->fetchAll();
+    }
+
+    public function prepare($sql){
+        return $this->pdo->prepare($sql);
     }
 }

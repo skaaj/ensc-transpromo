@@ -2,6 +2,8 @@
 
 require_once __DIR__.'/vendor/autoload.php';
 
+session_start();
+
 $app = new Silex\Application();
 
 // Silex
@@ -14,7 +16,6 @@ $loader = new Twig_Loader_Filesystem(__DIR__.'/web/');
 $twig   = new Twig_Environment($loader);
 
 // Instantiations
-// * fixme! * where should I keep the db ?
 $app['database'] = new Model\Database(
     'localhost',  // host
     'transpromo', // db
@@ -22,17 +23,47 @@ $app['database'] = new Model\Database(
     ''            // pwd
 );
 
+if(isset($_SESSION['id_user'])){
+	$app['user'] = new Model\User($app['database']);
+	$app['user']->load('id_user', $_SESSION['id_user']);
+}
+
 // Routing rules
 $app->get('/', function () use($app, $twig) {
-	$obj = new Model\Object($app['database']);
-	$data = $obj->list_table();
+	// retrieve all data the view will need
+	$data = array();
+	if(isset($app['user']))
+		$data['user'] = $app['user']->all();
 
-	if(empty($data))
-		return 'sorry da db is empty dawg';
+	return $twig->render('base.html.twig', $data);
+});
+
+$app->get('/login', function () use($twig) {
+	return $twig->render('login.html.twig');
+});
+
+$app->get('/logout', function () use($app, $twig) {
+	session_destroy();
+	return $app->redirect(__DIR__.'/');
+});
+
+$app->post('/login', function() use($app, $twig) {
+	$user = new Model\User($app['database']);
+	$user->load('mail', $_POST['email']);
+
+	$local_pwd  = $_POST['pwd'];
+	$remote_pwd = $user->get('mdp');
+
+	if($remote_pwd == $local_pwd)
+	{
+		$_SESSION['id_user'] = $user->get('id_user');
+		return $app->redirect(__DIR__.'/');
+	}
 	else
-		return $twig->render('base.html.twig', array(
-			"table" => $data
-		));
+	{
+		echo 'KO';
+		return $app->redirect(__DIR__.'/');
+	}
 });
 
 $app->run();
