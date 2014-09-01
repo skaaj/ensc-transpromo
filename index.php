@@ -29,6 +29,9 @@ if(isset($_SESSION['id_user'])){
 }
 
 // Routing rules
+
+/* ROOT */
+
 $app->get('/', function () use($app, $twig) {
 	// retrieve all data the view will need
 	$data = array();
@@ -38,13 +41,15 @@ $app->get('/', function () use($app, $twig) {
 	return $twig->render('base.html.twig', $data);
 });
 
-$app->get('/login', function () use($twig) {
-	return $twig->render('login.html.twig');
+/* REGISTER */
+$app->get('/register', function () use($twig) {
+	return $twig->render('register.html.twig');
 });
 
-$app->get('/logout', function () use($app, $twig) {
-	session_destroy();
-	return $app->redirect(__DIR__.'/');
+/* LOGIN */
+
+$app->get('/login', function () use($twig) {
+	return $twig->render('login.html.twig');
 });
 
 $app->post('/login', function() use($app, $twig) {
@@ -64,6 +69,19 @@ $app->post('/login', function() use($app, $twig) {
 		echo 'KO';
 		return $app->redirect(__DIR__.'/');
 	}
+});
+
+/* LOGOUT */
+
+$app->get('/logout', function () use($app, $twig) {
+	session_destroy();
+	return $app->redirect(__DIR__.'/');
+});
+
+/* PROJECTS */
+
+$app->get('/projects', function () use($app, $twig) {
+	return 'todo';
 });
 
 $app->run();

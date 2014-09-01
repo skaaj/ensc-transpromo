@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Twig template</title>
+    </head>
+    <body>
+        {% include 'nav.html.twig' %}
+        {% if user %}
+            <p>connected as {{ user.prenom }}</p>
+        {% else %}
+            <p>unconnected</p>
+        {% endif %}
+    </body>
+</html>
