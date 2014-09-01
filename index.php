@@ -81,7 +81,7 @@ $app->get('/logout', function () use($app, $twig) {
 /* PROJECTS */
 
 $app->get('/projects', function () use($app, $twig) {
-	return 'todo';
+	return $twig->render('projects.html.twig');
 });
 
 $app->run();
