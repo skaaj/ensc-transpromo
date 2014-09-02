@@ -5,10 +5,6 @@
     </head>
     <body>
         {% include 'nav.html.twig' %}
-        <ul>
-        {% for p in projects %}
-        <li>{{ p.titre }}</li>
-        {% endfor %}
-        </ul>
+        <p>Détails : {{ idea.titre }}</p>
     </body>
 </html>

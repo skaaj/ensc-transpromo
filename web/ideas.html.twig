@@ -6,8 +6,8 @@
     <body>
         {% include 'nav.html.twig' %}
         <ul>
-        {% for p in projects %}
-        <li>{{ p.titre }}</li>
+        {% for i in ideas %}
+            <li><b>{{ i.titre }}</b>{{ i.resume }}</li>
         {% endfor %}
         </ul>
     </body>
