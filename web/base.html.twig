@@ -11,5 +11,15 @@
         {% else %}
             <p>unconnected</p>
         {% endif %}
+        <ul>
+        {% for info in informations %}
+            <li>{{ info.titre }}</li>
+        {% endfor %}
+        </ul>
+        <ul>
+        {% for deadline in deadlines %}
+            <li>{{ deadline.titre }}</li>
+        {% endfor %}
+        </ul>
     </body>
 </html>

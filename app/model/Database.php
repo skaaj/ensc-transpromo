@@ -40,4 +40,46 @@ class Database {
     public function prepare($sql){
         return $this->pdo->prepare($sql);
     }
+
+    public function get_informations()
+    {
+        $sql = 'SELECT * FROM nouvelle';
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function get_deadlines()
+    {
+        $sql = 'SELECT * FROM date_but';
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function get_projects()
+    {
+        $sql = 'SELECT id_proj, titre FROM projet';
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function get_project($id)
+    {
+        $sql = 'SELECT * FROM projet WHERE id_proj = ?';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_one($query);
+    }
+
+    public function get_ideas()
+    {
+        $sql = 'SELECT id_idee, titre FROM idee';
+        return $this->pdo->query($sql)->fetchAll();
+    }
+
+    public function get_idea($id)
+    {
+        $sql = 'SELECT * FROM idea WHERE id_idee = ?';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_one($query);
+    }
 }

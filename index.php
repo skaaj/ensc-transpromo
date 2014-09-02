@@ -32,23 +32,21 @@ if(isset($_SESSION['id_user'])){
 
 /* ROOT */
 
-$app->get('/', function () use($app, $twig) {
+$app->get('/', function(Silex\Application $app) use($twig) {
 	// retrieve all data the view will need
 	$data = array();
 	if(isset($app['user']))
 		$data['user'] = $app['user']->all();
 
-	// TODO
-	//   informations
-	//   deadline
-
+	$data['informations'] = $app['database']->get_informations();
+	$data['deadlines'] = $app['database']->get_deadlines();
 
 	return $twig->render('base.html.twig', $data);
 });
 
 /* REGISTER */
 
-// todo
+// TODO
 $app->get('/register', function () use($twig) {
 	return $twig->render('register.html.twig');
 });
@@ -59,7 +57,7 @@ $app->get('/login', function () use($twig) {
 	return $twig->render('login.html.twig');
 });
 
-$app->post('/login', function() use($app, $twig) {
+$app->post('/login', function(Silex\Application $app) use($twig) {
 	$user = new Model\User($app['database']);
 	$user->load('mail', $_POST['email']);
 
@@ -80,7 +78,7 @@ $app->post('/login', function() use($app, $twig) {
 
 /* LOGOUT */
 
-$app->get('/logout', function () use($app, $twig) {
+$app->get('/logout', function(Silex\Application $app) use($twig) {
 	session_destroy();
 	return $app->redirect(__DIR__.'/');
 });
@@ -88,51 +86,41 @@ $app->get('/logout', function () use($app, $twig) {
 /* PROJECTS */
 
 // list - design
-$app->get('/project/', function () use($app, $twig) {
-	$sql = 'SELECT id_proj, titre FROM projet';
-	$query = $app['database']->prepare($sql);
-	$query->execute();
-
-	$projects = $app['database']->fetch_all($query);
+$app->get('/project/', function(Silex\Application $app) use($twig) {
+	$projects = $app['database']->get_projects();
 
 	return $twig->render('projects.html.twig', array('projects' => $projects));
 });
 
 // details - design
 $app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
-	return 'Project details page'; // TODO
+	$project = $app['database']->get_project($id);
+	var_dump($project);
+
+	return 'Project details page';
 });
 
-// add - todo - 2A
-$app->get('/project/add', function () use($app, $twig) {
+// add (2A) - design 
+$app->get('/project/add', function(Silex\Application $app) use($twig) {
 	return 'Add project';
 });
 
-// apply - 1A
-$app->get('/project/apply/{id}', function (Silex\Application $app, $id) use($app, $twig) {
-	return 'Do you really want to apply to '.$id.' project ?'; // TODO
+// apply (1A) - design
+$app->get('/project/apply/{id}', function (Silex\Application $app, $id) use($twig) {
+	return 'Do you really want to apply to '.$id.' project ?';
 });
 
 /* IDEAS */
 
 // list - design
-$app->get('/idea/', function () use($app, $twig) {
-	$sql = 'SELECT * FROM idee';
-	$query = $app['database']->prepare($sql);
-	$query->execute();
-
-	$ideas = $app['database']->fetch_all($query);
-
+$app->get('/idea/', function(Silex\Application $app) use($twig) {
+	$ideas = $app['database']->get_ideas();
 	return $twig->render('ideas.html.twig', array('ideas' => $ideas));
 });
 
 // details - design
 $app->get('/idea/{id}', function (Silex\Application $app, $id) use($twig) {
-	$sql = 'SELECT * FROM idee WHERE id_idee = ?';
-	$query = $app['database']->prepare($sql);
-	$query->execute(array($id));
-
-	$idea = $app['database']->fetch_one($query);
+	$idea = $app['database']->get_idea($id);
 
 	if(empty($idea))
 		return 'id '.$id.' can\'t be found';
@@ -156,8 +144,8 @@ $app->get('/candidates', function (Silex\Application $app) use($twig) {
 });
 
 // 1A
-$app->get('/applies', function (Silex\Application $app) use($twig) {
-	return 'Applies list page'; // TODO
+$app->get('/applications', function (Silex\Application $app) use($twig) {
+	return 'Applications list page'; // TODO
 });
 
 /* MISC */
