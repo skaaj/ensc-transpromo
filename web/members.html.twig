@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Twig template</title>
+    </head>
+    <body>
+        {% include 'nav.html.twig' %}
+        <ul>
+        {% for m in members %}
+            <li>{{ m.prenom }}</li>
+        {% endfor %}
+        </ul>
+    </body>
+</html>

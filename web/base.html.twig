@@ -1,25 +1,61 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <title>Twig template</title>
-    </head>
-    <body>
-        <p>Page d'accueil</p>
-        {% include 'nav.html.twig' %}
-        {% if user %}
-            <p>connected as {{ user.prenom }}</p>
-        {% else %}
-            <p>unconnected</p>
-        {% endif %}
-        <ul>
-        {% for info in informations %}
-            <li>{{ info.titre }}</li>
-        {% endfor %}
-        </ul>
-        <ul>
-        {% for deadline in deadlines %}
-            <li>{{ deadline.titre }}</li>
-        {% endfor %}
-        </ul>
-    </body>
+<html lang="fr">
+  <head>
+  	{% set root_path = '/ensc-transpromo' %}
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://bootflat.github.io/bootflat/css/bootflat.css">
+    <link rel="stylesheet" href="{{ root_path }}/web//css/style.css">
+    <link rel="icon" href="{{ root_path }}/web/img/favicon.ico" />
+    <title>ENSC - Projet transpromo</title>
+  </head>
+
+  <body>
+    <div id="wrap">
+
+    	{% include 'navbar.html.twig' %}
+
+      <div class="container">
+      	{% block content %}
+      	{% endblock %}
+      </div>
+    </div>
+		<div class="footer">
+			<div class="container">
+        <div class="clearfix">
+          <div class="footer-logo"><a href="#"><img src="http://bootflat.github.io/img/footer-logo.png" />ensc</a></div>
+            <dl class="footer-nav">
+	            <dt class="nav-title">NAVIGATION</dt>
+	            <dd class="nav-item"><a href="{{ root_path }}/">Accueil</a></dd>
+	            <dd class="nav-item"><a href="{{ root_path }}/project">Projets</a></dd>
+	            <dd class="nav-item"><a href="{{ root_path }}/idea">Idées</a></dd>
+            </dl>
+            <dl class="footer-nav">
+              <dt class="nav-title">ACTIONS</dt>
+              <dd class="nav-item"><a href="#">Candidatures</a></dd>
+              <dd class="nav-item"><a href="#">Profil</a></dd>
+              <dd class="nav-item"><a href="#">Déconnexion</a></dd>
+            </dl>
+            <dl class="footer-nav">
+              <dt class="nav-title">À propos</dt>
+              <dd class="nav-item"><a href="#">Contexte</a></dd>
+              <dd class="nav-item"><a href="#">Code source</a></dd>
+              <dd class="nav-item"><a href="#">CGU</a></dd>
+            </dl>
+        </div>
+        <div class="footer-copyright text-center">Copyright &copy; 2014 ensc-transpromo. All rights reserved.</div>
+      </div>
+		</div>
+
+    <!-- Bootstrap -->
+    <script src="https://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="https://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+
+    <!-- Bootflat's JS files.-->
+    <script src="https://bootflat.github.io/bootflat/js/icheck.min.js"></script>
+    <script src="https://bootflat.github.io/bootflat/js/jquery.fs.selecter.min.js"></script>
+    <script src="https://bootflat.github.io/bootflat/js/jquery.fs.stepper.min.js"></script>
+  </body>
 </html>

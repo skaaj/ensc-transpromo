@@ -1,0 +1,15 @@
+html,
+body {
+  height: 100%;
+}
+
+#wrap {
+  min-height: 100%;
+  height: auto;
+  margin: 0 auto -239px;
+  padding: 70px 0 239px;
+}
+
+.form-signin input{
+  margin:10px 0;
+}

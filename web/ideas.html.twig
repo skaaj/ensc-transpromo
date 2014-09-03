@@ -1,14 +1,20 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Twig template</title>
-    </head>
-    <body>
-        {% include 'nav.html.twig' %}
-        <ul>
-        {% for i in ideas %}
-            <li><b>{{ i.titre }}</b>{{ i.resume }}</li>
-        {% endfor %}
-        </ul>
-    </body>
-</html>
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div class="row">
+      <h3>Boîte à idées <button class="btn" style="margin-left:10px;"><span class="glyphicon glyphicon-plus"></span> Nouvelle</button></h3>
+      <div class="list-group">
+      {% for i in ideas %}
+        <div class="list-group-item">
+          <h4 class="list-group-item-heading">{{ i.titre }}</h4>
+          <p class="list-group-item-text">
+            {{ i.resume }}
+          </p>
+          <p style="margin-top:10px;">
+            <button class="btn btn-info btn-sm">Créer le projet associé</button>
+          </p>
+        </div>
+      {% endfor %}
+      </div>
+    </div>
+{% endblock %}

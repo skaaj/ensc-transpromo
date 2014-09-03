@@ -30,6 +30,10 @@ if(isset($_SESSION['id_user'])){
 
 // Routing rules
 
+$app->get('/layout', function(Silex\Application $app) use($twig) {
+	return $twig->render('base.html.twig');
+});
+
 /* ROOT */
 
 $app->get('/', function(Silex\Application $app) use($twig) {
@@ -41,7 +45,7 @@ $app->get('/', function(Silex\Application $app) use($twig) {
 	$data['informations'] = $app['database']->get_informations();
 	$data['deadlines'] = $app['database']->get_deadlines();
 
-	return $twig->render('base.html.twig', $data);
+	return $twig->render('index.html.twig', array('data' => $data, 'active' => 'home'));
 });
 
 /* REGISTER */
@@ -89,7 +93,7 @@ $app->get('/logout', function(Silex\Application $app) use($twig) {
 $app->get('/project/', function(Silex\Application $app) use($twig) {
 	$projects = $app['database']->get_projects();
 
-	return $twig->render('projects.html.twig', array('projects' => $projects));
+	return $twig->render('projects.html.twig', array('projects' => $projects, 'active' => 'project'));
 });
 
 // details - design
@@ -115,13 +119,15 @@ $app->get('/project/apply/{id}', function (Silex\Application $app, $id) use($twi
 // list - design
 $app->get('/idea/', function(Silex\Application $app) use($twig) {
 	$ideas = $app['database']->get_ideas();
-	return $twig->render('ideas.html.twig', array('ideas' => $ideas));
+	return $twig->render('ideas.html.twig', array('ideas' => $ideas, 'active' => 'idea'));
 });
 
 // details - design
 $app->get('/idea/{id}', function (Silex\Application $app, $id) use($twig) {
 	$idea = $app['database']->get_idea($id);
-
+	
+	var_dump($idea);
+	
 	if(empty($idea))
 		return 'id '.$id.' can\'t be found';
 	else
@@ -135,7 +141,8 @@ $app->get('/idea/add/', function (Silex\Application $app) use($twig) {
 /* PROFILE */
 
 $app->get('/members', function (Silex\Application $app) use($twig) {
-	return 'Members list page'; // TODO
+	$members = $app['database']->get_members();
+	return $twig->render('members.html.twig', array('members' => $members));
 });
 
 // 2A

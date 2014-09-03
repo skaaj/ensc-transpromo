@@ -55,7 +55,7 @@ class Database {
 
     public function get_projects()
     {
-        $sql = 'SELECT id_proj, titre FROM projet';
+        $sql = 'SELECT id_proj, titre, desc_travail FROM projet';
         return $this->pdo->query($sql)->fetchAll();
     }
 
@@ -70,16 +70,22 @@ class Database {
 
     public function get_ideas()
     {
-        $sql = 'SELECT id_idee, titre FROM idee';
+        $sql = 'SELECT id_idee, titre, resume FROM idee';
         return $this->pdo->query($sql)->fetchAll();
     }
 
     public function get_idea($id)
     {
-        $sql = 'SELECT * FROM idea WHERE id_idee = ?';
+        $sql = 'SELECT * FROM idee WHERE id_idee = ?';
         $query = $this->pdo->prepare($sql);
         $query->execute(array($id));
 
         return $this->fetch_one($query);
+    }
+
+    public function get_members()
+    {
+        $sql = 'SELECT * FROM utilisateur WHERE publi_info = 1';
+        return $this->pdo->query($sql)->fetchAll();
     }
 }
