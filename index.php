@@ -44,8 +44,7 @@ $app->get('/', function(Silex\Application $app) use($twig) {
 	
 	set_active($array, 'home');
 	
-	check_notif($array);
-	check_user($array, $app);
+	get_context($array, $app);
 
 	return $twig->render('index.html.twig', $array);
 });
@@ -165,22 +164,42 @@ $app->get('/logout', function(Silex\Application $app) use($twig) {
 
 // list - design
 $app->get('/project/', function(Silex\Application $app) use($twig) {
-	$projects = $app['database']->get_projects();
+	get_context($array, $app);
 
-	return $twig->render('projects.html.twig', array('projects' => $projects, 'active' => 'project'));
-});
+	push($array, 'projects', $app['database']->get_projects());
+	set_active($array, 'project');
 
-// details - design
-$app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
-	$project = $app['database']->get_project($id);
-	var_dump($project);
-
-	return 'Project details page';
+	return $twig->render('projects.html.twig', $array);
 });
 
 // add (2A) - design 
 $app->get('/project/add', function(Silex\Application $app) use($twig) {
-	return 'Add project';
+	get_context($array, $app);
+	set_active($array, 'project');
+
+	if($app['user']['qualite'] < 2){
+		push_notif(new_notification(
+			'Action refusée !',
+			'Vous devez être en deuxième année pour créer un projet.',
+			'warning'
+		));
+
+	    $sub_request = Request::create('/project/', 'GET');
+	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
+	
+	return $twig->render('project_add.html.twig', $array);
+});
+
+// details - design
+$app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
+	get_context($array, $app);
+
+	push($array, 'project', $app['database']->get_project($id));
+	push($array, 'count', $app['database']->get_places($id));
+	set_active($array, 'project');
+
+	return $twig->render('project.html.twig', $array);
 });
 
 // apply (1A) - design

@@ -86,3 +86,9 @@ function check_notif(&$array)
 	else
 		instanciate($array);
 }
+
+function get_context(&$array, $app)
+{
+	check_notif($array);
+	check_user($array, $app);
+}

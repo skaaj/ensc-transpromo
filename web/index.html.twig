@@ -4,10 +4,29 @@
 	<div class="row well" style="margin:0 0 20px 0;">
 		<div class="col-sm-8 col-md-8">
 			<h3 style="margin-top:0px;">Bienvenue !</h3>
-			<h4>Projet transpromo</h4>
-			<p>Explication du projet transpromo.</p>
-			<h4>Comment utiliser ce site</h4>
-			<p>Explication du site.</p>
+			<h4>Le projet transpromotion</h4>
+			<p>Ce projet constitue une unité d’enseignement se déroulant pendant le premier semestre des élèves de première et deuxième année. </p>
+			<p>Durant ce semestre, des groupes d’élèves des deux promotions collaboreront au développement d’un projet dans sa phase d’identification dans un premier temps 
+				correspondant au premier livrable. Cette première étape doit permettre de déterminer ce qui pourra être réalisé, d’identifier clairement les objectifs, stratégies et contraintes associées.
+				Dans un deuxième temps, la phase de définition aura pour but d’expliquer et détailler précisément le contenu du projet et le service rendu, les techniques employées, les ressources, 
+				coûts et planning.
+			</p>
+			<p>Tous les élèves peuvent proposer une idée de projet mais seuls les élèves de deuxième année 
+				pourront prétendre à être responsable d’un projet. Une fois le projet disponible dans la 
+				rubrique « consulter les projet », des équipes de six élèves (idéalement trois 1A et trois 2A) 
+				pourront être constituées grâce aux candidatures des élèves sur ce site.
+			</p>
+			<h4>Comment utiliser ce site ?</h4>
+			<p>Pour utiliser ce site, vous devez d’abord vous inscrire afin de créer un compte. Ce compte 
+			vous permettra de vous présenter, de proposer une idée de projet, de candidater dans un projet 
+			ou d’être responsable d’un projet si vous êtes en deuxième année.</p>
+			<p>Une fois une idée proposée, elle est susceptible d’être reprise par qui souhaite en être 
+			responsable. Une candidature émise est en attente jusqu’à sa validation par un chef de 
+			projet. Une fois qu’une des candidatures d’un élève est acceptée dans un projet, ses autres 
+			candidatures n’apparaitront plus. </p>
+			<p>N’hésitez pas à consulter régulièrement l’avancement de vos candidatures.</p>
+			<p>Les chefs de projets sont priés de confirmer assez rapidement les personnes qu’ils souhaitent 
+			recruter dans la rubrique Mon Projet.</p>
 		</div>
 		<div class="col-sm-4 col-md-4">
 			{% if user %}
@@ -51,7 +70,7 @@
 			<h4>Informations</h4>
 			<div class="list-group">
 			{% for info in informations %}
-        <a href="#" class="list-group-item">
+        <a href="#" class="disable-link list-group-item">
           <h4 class="list-group-item-heading">{{ info.titre }}</h4>
           <p class="list-group-item-text">{{ info.contenu }}</p>
         </a>
@@ -62,7 +81,7 @@
       <h4>Dates limites</h4>
       <ul class="list-group">
         {% for date in deadlines %}
-          <li class="list-group-item"><span class="badge">{{ date.date_lim }}</span>{{ date.titre }}</li>
+          <li class="list-group-item"><span class="badge">{{ date.date_lim|date("d/m/Y") }}</span>{{ date.titre }}</li>
         {% endfor %}
       </ul>
     </div>

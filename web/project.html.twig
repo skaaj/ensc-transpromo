@@ -1,0 +1,30 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div class="row">
+      <div class="col-sm-8 col-md-8">
+        <div class="jumbotron">
+            <div class="jumbotron-contents">
+              <h1>{{ project.titre }}</h1>
+              <h2>Description</h2>
+              <p>{{ project.desc_travail }}</p>
+              <h2>Profil recherché</h2>
+              <p>{{ project.desc_profil }}</p>
+            </div>
+        </div>
+      </div>
+      <div class="col-sm-4 col-md-4">
+        <div class="jumbotron">
+            <div class="jumbotron-contents">
+              <h2>Places occupées</h2>
+              <div class="progress">
+                <div class="progress-bar progress-bar-{{ count.ui_color }}" role="progressbar" aria-valuenow="{{ count.percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ count.percent }}%;">{{ count.percent }}%</div>
+              </div>
+              <h2>Informations</h2>
+              <p><b>Tuteur</b> : {{ project.tuteur }}</p>
+              <p><b>Date de création</b> : {{ project.date_creation|date("d/m/Y") }}</p>
+            </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

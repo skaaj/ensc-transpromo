@@ -22,7 +22,7 @@ body {
   margin-left: 20px;
 }
 
-a.list-group-item:hover{
+a.disable-link:hover{
   background-color:white;
   cursor:text;
 }

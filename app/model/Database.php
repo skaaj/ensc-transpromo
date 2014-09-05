@@ -55,7 +55,10 @@ class Database {
 
     public function get_projects()
     {
-        $sql = 'SELECT id_proj, titre, desc_travail FROM projet';
+        $sql = 'SELECT id_proj, titre, desc_travail, count(id_cand) AS nb_cand FROM projet 
+                LEFT JOIN candidature ON id_proj_cand=id_proj AND statut = 1
+                GROUP BY id_proj';
+
         return $this->pdo->query($sql)->fetchAll();
     }
 
@@ -66,6 +69,26 @@ class Database {
         $query->execute(array($id));
 
         return $this->fetch_one($query);
+    }
+
+    public function get_places($id)
+    {
+        $sql = 'SELECT count(*) AS value FROM candidature
+                WHERE id_proj_cand = ? AND statut = 1';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        $result = $this->fetch_one($query);
+        $result['percent'] = floor($result['value'] * 100 / 5); // 5 is not always the max though... fixme :)
+
+        if($result['percent'] <= 50)
+            $result['ui_color'] = 'success';
+        elseif($result['percent'] > 50 AND  $result['percent'] <= 75)
+            $result['ui_color'] = 'warning';
+        else
+            $result['ui_color'] = 'danger';
+
+        return $result;
     }
 
     public function get_ideas()
