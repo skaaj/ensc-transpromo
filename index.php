@@ -1,6 +1,10 @@
 <?php
 
 require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__.'/app/utils/misc.php';
+
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 session_start();
 
@@ -23,68 +27,138 @@ $app['database'] = new Model\Database(
     ''            // pwd
 );
 
-if(isset($_SESSION['id_user'])){
-	$app['user'] = new Model\User($app['database']);
-	$app['user']->load('id_user', $_SESSION['id_user']);
-}
+// Retrieve user informations
+if(isset($_SESSION['id_user']))
+	$app['user'] = $app['database']->get_user($_SESSION['id_user']);
+else
+	$app['user'] = null;
 
 // Routing rules
-
-$app->get('/layout', function(Silex\Application $app) use($twig) {
-	return $twig->render('base.html.twig');
-});
 
 /* ROOT */
 
 $app->get('/', function(Silex\Application $app) use($twig) {
 	// retrieve all data the view will need
-	$data = array();
-	if(isset($app['user']))
-		$data['user'] = $app['user']->all();
+	push($array, 'deadlines',    $app['database']->get_deadlines());
+	push($array, 'informations', $app['database']->get_informations());
+	
+	set_active($array, 'home');
+	
+	check_notif($array);
+	check_user($array, $app);
 
-	$data['informations'] = $app['database']->get_informations();
-	$data['deadlines'] = $app['database']->get_deadlines();
-
-	return $twig->render('index.html.twig', array('data' => $data, 'active' => 'home'));
+	return $twig->render('index.html.twig', $array);
 });
 
 /* REGISTER */
 
 // TODO
 $app->get('/register', function () use($twig) {
-	return $twig->render('register.html.twig');
+	check_notif($array);
+
+	return $twig->render('register.html.twig', $array);
+});
+
+$app->post('/register', function(Silex\Application $app) use($twig) {
+
+	$result = $app['database']->insert_user(
+		$_POST['prenom'],
+		$_POST['nom'],
+		$_POST['mail'],
+		$_POST['pwd'],
+		$_POST['year'],
+		$_POST['school'],
+		$_POST['skill'],
+		$_POST['public']
+		);
+
+	var_dump($result);
+
+	if($result === 'mail'){
+		push_notif(new_notification(
+			'Échec de l\'inscription !',
+			'L\'adresse email indiquée existe déjà.',
+			'danger'
+		));
+
+    	$sub_request = Request::create('/register', 'GET');
+    	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}elseif($result === false){
+		push_notif(new_notification(
+			'Échec de l\'inscription !',
+			'Une erreur est survenue lors de l\'inscription. Veuillez recommencer.',
+			'danger'
+		));
+
+    	$sub_request = Request::create('/register', 'GET');
+    	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}else{
+		push_notif(new_notification(
+			'Inscription réussie !',
+			'Vous pouvez maintenant vous connecter avec vos identifiants.',
+			'success'
+		));
+
+    	$sub_request = Request::create('/login', 'GET');
+    	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
 });
 
 /* LOGIN */
 
 $app->get('/login', function () use($twig) {
-	return $twig->render('login.html.twig');
+	check_notif($array);
+
+	return $twig->render('login.html.twig', $array);
 });
 
+// TODO (0.9)
+//   -> error precision
 $app->post('/login', function(Silex\Application $app) use($twig) {
-	$user = new Model\User($app['database']);
-	$user->load('mail', $_POST['email']);
+	$user = $app['database']->get_user_mail($_POST['mail']);
 
 	$local_pwd  = $_POST['pwd'];
-	$remote_pwd = $user->get('mdp');
+	$remote_pwd = $user['mdp'];
 
 	if($remote_pwd == $local_pwd)
 	{
-		$_SESSION['id_user'] = $user->get('id_user');
-		return $app->redirect(__DIR__.'/');
+		$_SESSION['id_user'] = $user['id_user'];
+
+		push_notif(new_notification(
+			'Connexion réussi !',
+			'Vous pouvez maintenant utiliser le site.',
+			'success'
+		));
+
+    	$sub_request = Request::create('/', 'GET');
+    	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 	}
 	else
 	{
-		echo 'KO';
-		return $app->redirect(__DIR__.'/');
+		push_notif(new_notification(
+			'Erreur !',
+			'Le compte n\'existe pas ou le mot de passe est incorrect.',
+			'danger'
+		));
+
+    	$sub_request = Request::create('/login', 'GET');
+    	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 	}
 });
 
 /* LOGOUT */
 
 $app->get('/logout', function(Silex\Application $app) use($twig) {
-	session_destroy();
-	return $app->redirect(__DIR__.'/');
+	unset($_SESSION['id_user']);
+
+	push_notif(new_notification(
+		'Succés !',
+		'Vous avez bien été déconnecté.',
+		'success'
+	));
+
+    $sub_request = Request::create('/', 'GET');
+    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 });
 
 /* PROJECTS */

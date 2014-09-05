@@ -10,6 +10,27 @@ body {
   padding: 70px 0 239px;
 }
 
-.form-signin input{
+.form-signin input, select, textarea{
   margin:10px 0;
+}
+
+.form-signin textarea{
+  resize:none;
+}
+
+.form-signin .checkbox{
+  margin-left: 20px;
+}
+
+a.list-group-item:hover{
+  background-color:white;
+  cursor:text;
+}
+
+.alert{
+  margin: 0 15px 20px 15px;
+}
+
+textarea {
+    resize: none;
 }

@@ -18,6 +18,21 @@
     	{% include 'navbar.html.twig' %}
 
       <div class="container">
+      	{% if notif is not empty %}
+				<div class="row">
+					<div class="alert alert-{{ notif.type }} alert-dismissable">
+            <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+            <h4>{{ notif.title }}</h4>
+            <p>{{ notif.message }}</p>
+            {% if notif.action %}
+            	<p><a class="btn btn-{{ notif.type }}" href="{{ notif.action.target }}">{{ notif.action.label }}</a>
+            	{% if notif.alt %} <a class="btn btn-link" href="{{ notif.alt.target }}">{{ notif.alt.label }}</a> {% endif %}
+            	</p>
+            {% endif %}
+          </div>
+				</div>
+				{% endif %}
+
       	{% block content %}
       	{% endblock %}
       </div>

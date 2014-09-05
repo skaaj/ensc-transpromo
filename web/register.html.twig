@@ -1,15 +1,41 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Twig template</title>
-    </head>
-    <body>
-      {% include 'nav.html.twig' %}
-      <h1>register</h1>
-        <form action="./register" method="post">
-          <input name="email"/>
-          <input name="pwd" />
-          <input type="submit" />
-        </form>
-    </body>
-</html>
+{% extends "base.html.twig" %}
+
+{% block content %}
+<div class="row">
+  <div class="col-sm-3 col-md-3"></div>
+  <div class="col-sm-6 col-md-6">
+    <form class="form-signin" role="form" action="{{ root_path }}/register" method="post">
+      <h2 class="form-signin-heading">Inscription</h2>
+      <input type="text" name="prenom" class="form-control" placeholder="Prénom" required autofocus>
+      <input type="text" name="nom" class="form-control" placeholder="Nom" required>
+      <input type="email" name="mail" class="form-control" placeholder="Adresse email" required>
+      <input type="password" name="pwd" class="form-control" placeholder="Mot de passe" required>
+
+      <select name="year" class="form-control">
+        <option>1A</option>
+        <option>2A</option>
+      </select>
+
+      <textarea name="school" class="form-control" rows="3" placeholder="Votre cursus scolaire..." required></textarea>
+      <textarea name="skill" class="form-control" rows="3" placeholder="Vos compétences..." required></textarea>
+
+      <div class="checkbox">
+        <label>
+          <input name="public" type="checkbox" checked>
+          Vous autorisez l'accés à ces informations par tous les utilisateurs
+        </label>
+      </div>
+
+      <div class="checkbox">
+        <label>
+          <input type="checkbox" required>
+          Vous affirmez avoir lu et accepté les <a href="{{ root_path }}/cgu">Conditions Générales d'Utilisation</a> (CGU).
+        </label>
+      </div>
+
+      <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:20px;">S'inscrire</button>
+    </form>
+  </div>
+  <div class="col-sm-3 col-md-3"></div>
+</div>
+{% endblock %}

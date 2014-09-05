@@ -88,4 +88,43 @@ class Database {
         $sql = 'SELECT * FROM utilisateur WHERE publi_info = 1';
         return $this->pdo->query($sql)->fetchAll();
     }
+
+    public function get_user($id)
+    {
+        $sql = 'SELECT * FROM utilisateur WHERE id_user = ?';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_one($query);
+    }
+
+    public function get_user_mail($mail)
+    {
+        $sql = 'SELECT * FROM utilisateur WHERE mail = ?';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($mail));
+
+        return $this->fetch_one($query);
+    }
+    
+    public function insert_user($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public){
+
+        $year = ($year == '1A') ? 1 : 2;
+        $public = ($public == 'on') ? 1 : 0;
+
+        $sql = 'SELECT count(*) as count FROM utilisateur WHERE mail = ?';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($mail));
+
+        $nb_email = $this->fetch_one($query);
+
+        if($nb_email['count'] > 0){
+            return 'mail';
+        }
+
+        $sql = 'INSERT INTO utilisateur VALUES(null, 1, ?, ?, ?, ?, ?, ?, ?, ?, null)';
+        $query = $this->pdo->prepare($sql);
+
+        return $query->execute(array($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public));
+    }
 }

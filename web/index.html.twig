@@ -1,27 +1,31 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
-	<div class="row">
+	<div class="row well" style="margin:0 0 20px 0;">
 		<div class="col-sm-8 col-md-8">
-			<div class="jumbotron">
-				<div class="jumbotron-contents">
-					<h1 style="margin-top:0px;">Bienvenue !</h1>
-					<h2>Projet transpromo</h2>
-					<p>Explication du projet transpromo.</p>
-					<h2>Comment utiliser ce site</h2>
-					<p>Explication du site.</p>
-				</div>
-			</div>
+			<h3 style="margin-top:0px;">Bienvenue !</h3>
+			<h4>Projet transpromo</h4>
+			<p>Explication du projet transpromo.</p>
+			<h4>Comment utiliser ce site</h4>
+			<p>Explication du site.</p>
 		</div>
-		<div class="col-sm-4 col-md-4 well">
-			<form class="form-signin" role="form">
-        <h3 class="form-signin-heading">Inscription rapide</h3>
-        <input type="email" class="form-control" placeholder="Email" required autofocus>
-        <input type="password" class="form-control" placeholder="Mot de passe" required>
-        <button class="btn btn-primary btn-block" type="submit">S'inscrire</button>
+		<div class="col-sm-4 col-md-4">
+			{% if user %}
+				<h4>{{ user.prenom }} {{ user.nom }}</h4>
+				<p>Vous êtes 
+				{% if user.qualite < 3 %}en {{ user.qualite }}A vous pouvez ajouter des candidatures aux projets.</p>
+			  {% else %}professeur.</p>{% endif %}
+			{% else %}
+			<form class="form-signin" role="form" action="{{ root_path }}/login" method="post">
+       	<h3 class="form-signin-heading" style="margin-top:0px;">Connexion</h3>
+       	<input type="email" name="mail" class="form-control" placeholder="Adresse email" required autofocus>
+       	<input type="password" name="pwd" class="form-control" placeholder="Mot de passe" required>
+       	<button class="btn btn-primary btn-block" type="submit">Se connecter</button>
       </form>
+      {% endif %}
 		</div>
 	</div>
+		
 	<div class="row">
 	  <div class="col-sm-6 col-md-6">
 	    <div class="thumbnail">
@@ -44,8 +48,9 @@
 	</div>
 	<div class="row" style="margin-bottom:40px;">
 		<div class="col-sm-8 col-md-8">
+			<h4>Informations</h4>
 			<div class="list-group">
-			{% for info in data.informations %}
+			{% for info in informations %}
         <a href="#" class="list-group-item">
           <h4 class="list-group-item-heading">{{ info.titre }}</h4>
           <p class="list-group-item-text">{{ info.contenu }}</p>
@@ -56,7 +61,7 @@
     <div class="col-md-4">
       <h4>Dates limites</h4>
       <ul class="list-group">
-        {% for date in data.deadlines %}
+        {% for date in deadlines %}
           <li class="list-group-item"><span class="badge">{{ date.date_lim }}</span>{{ date.titre }}</li>
         {% endfor %}
       </ul>
