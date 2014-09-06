@@ -15,6 +15,7 @@
           	  <li {% if active == 'home' %} class="active" {% endif %}><a href="{{ root_path }}/">Accueil</a></li>
            		<li {% if active == 'project' %} class="active" {% endif %}><a href="{{ root_path }}/project/">Projets</a></li>
 	            <li {% if active == 'idea' %} class="active" {% endif %}><a href="{{ root_path }}/idea/">Idées</a></li>
+              <li {% if active == 'members' %} class="active" {% endif %}><a href="{{ root_path }}/members/">Membres</a></li>
           	</ul>
           	<ul class="nav navbar-nav navbar-right">
               {% if user %}
