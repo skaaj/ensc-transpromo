@@ -1,12 +1,15 @@
 {% extends "base.html.twig" %}
 
 {% block content %}
+    {% if owner.id_proj == project.id_proj %}
+    {% set is_owner = true %}
+    {% endif %}
     <div class="row">
       <div class="col-sm-8 col-md-8">
         <div class="jumbotron">
             <div class="jumbotron-contents">
               <h1>{{ project.titre }}
-              {% if owner.id_proj == project.id_proj %}
+              {% if is_owner %}
                 <a href="{{ root_path }}/project/edit/{{ project.id_proj }}" class="btn btn-primary btn-sm" style="margin-left:10px;">Éditer</a>
                 <a href="{{ root_path }}/project/delete/{{ project.id_proj }}" class="btn btn-warning btn-sm">Supprimer</a>
               {% endif %}
@@ -26,23 +29,49 @@
                 <div class="progress-bar progress-bar-{{ count.ui_color }}" role="progressbar" aria-valuenow="{{ count.percent }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ count.percent }}%;">{{ count.percent }}%</div>
               </div>
               <h2>Informations</h2>
-              <p><b>Tuteur</b> : {{ project.tuteur }}</p>
+              <p><b>Responsable</b> : {{ owner.prenom }} {{ owner.nom }}</p>
+              {% if project.tuteur %} <p><b>Tuteur</b> : {{ project.tuteur }}</p>{% endif %}
               <p><b>Date de création</b> : {{ project.date_creation|date("d/m/Y") }}</p>
             </div>
         </div>
       </div>
     </div>
     <div class="row" style="margin:0 0 20px 0;">
+      {% if is_owner %}
       <h3>Candidatures</h3>
       <div class="panel panel-default">
         <ul class="list-group">
-        {% for a in applications %}
-          <li class="list-group-item">
-            <h5>{{ a.prenom }} {{ a.nom }} <a href="{{ root_path }}/project/accept/{{ project.id_proj }}/{{ a.id_cand }}" class="btn btn-success btn-sm" style="margin-left:10px;">Accepter</a></h5>
-            <p>{{ a.desc_motiv }}</p>
-          </li>
-        {% endfor %}
+        {% if applications is not empty %}
+          {% for a in applications %}
+            <li class="list-group-item">
+              <h5>{{ a.prenom }} {{ a.nom }} <a href="{{ root_path }}/project/accept/{{ project.id_proj }}/{{ a.id_cand }}" class="btn btn-success btn-sm" style="margin-left:10px;">Accepter</a></h5>
+              <p>{{ a.desc_motiv }}</p>
+            </li>
+          {% endfor %}
+        {% else %}
+            <li class="list-group-item">
+              <p style="margin:0px;">Vous n'avez aucune candidature pour le moment.</p>
+            </li>
+        {% endif %}
         </ul>
       </div>
+      {% else %}
+      <h3>Candidature</h3>
+      <div class="panel panel-default">
+        <ul class="list-group">
+          <li class="list-group-item">
+            {% if not has_application %}
+              <p>Expliquez quelles sont vos motivations en quelques phrases :</p>
+              <form action="{{ root_path }}/project/apply/{{ project.id_proj}}" method="post">
+                <textarea class="form-control" name="motiv" rows="3"></textarea>
+                {% if not is_owner %} <p style="margin-top:10px;"><input type="submit" class="btn btn-success" value="Je candidate"/></p> {% endif %}
+              </form>
+            {% else %}
+              <p style="margin:0px;">Vous avez candidaté à ce projet</p>
+            {% endif %}
+          </li>
+        </ul>
+      </div>
+      {% endif %}
     </div>
 {% endblock %}

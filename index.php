@@ -223,13 +223,21 @@ $app->post('/project/add', function(Silex\Application $app) use($twig) {
 	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 	}
 
-	$app['database']->insert_project($_POST['title'], $_POST['descr'], $_POST['seek'], $app['user']['id_user']);
+	$result = $app['database']->insert_project($_POST['title'], $_POST['descr'], $_POST['seek'], $app['user']['id_user']);
 	
-	push_notif(new_notification(
-		'Projet ajouté !',
-		'Vous pouvez maintenant former votre équipe.',
-		'success'
-	));
+	if($result){
+		push_notif(new_notification(
+			'Projet ajouté !',
+			'Vous pouvez maintenant former votre équipe.',
+			'success'
+		));
+	}else{
+		push_notif(new_notification(
+			'Impossible d\'ajouter le projet',
+			'Une erreur est survenue lors de l\'ajout du projet. Attention, vous ne pouvez avoir qu\'un seul projet à la fois.',
+			'danger'
+		));
+	}
 
 	$sub_request = Request::create('/project/', 'GET');
 	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
@@ -332,13 +340,19 @@ $app->get('/project/accept/{id}/{cand}', function(Silex\Application $app, $id, $
 	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 	}
 
-	$app['database']->accept_application($cand);
-
-	push_notif(new_notification(
-		'Candidature acceptée !',
-		'Vous venez d\'ajouter un membre à votre équipe.',
-		'success'
-	));
+	if($app['database']->accept_application($cand)){
+		push_notif(new_notification(
+			'Candidature acceptée !',
+			'Vous venez d\'ajouter un membre à votre équipe.',
+			'success'
+		));
+	}else{
+		push_notif(new_notification(
+			'Candidature refusée !',
+			'Impossible d\'ajouter ce membre. Peut-être est il déjà dans une autre équipe ?',
+			'danger'
+		));
+	}
 
 	$sub_request = Request::create('/', 'GET');
 	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
@@ -352,6 +366,7 @@ $app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
 		push($array, 'owner', $app['database']->get_owned_project($app['user']['id_user']));
 
 	push($array, 'applications', $app['database']->get_applications($id));
+	push($array, 'has_application', $app['database']->has_application($app['user']['id_user'], $id));
 	push($array, 'project', $app['database']->get_project($id));
 	push($array, 'count', $app['database']->get_places($id));
 	set_active($array, 'project');
@@ -360,8 +375,34 @@ $app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
 });
 
 // GET APPLY
-$app->get('/project/apply/{id}', function (Silex\Application $app, $id) use($twig) {
-	return 'Do you really want to apply to '.$id.' project ?';
+$app->post('/project/apply/{id}', function (Silex\Application $app, $id) use($twig) {
+	get_context($array, $app);
+
+	$ids = $app['database']->has_already_project($app['user']['id_user']);
+
+	if(!empty($ids))
+	{
+		return notif_n_redirect(new_notification('Candidature refusée !', 'Vous êtes déjà dans un projet.', 'danger'), '/', $app);
+	}else{
+		if($app['database']->add_application($_POST['motiv'], $app['user']['id_user'], $id))
+		{
+			push_notif(new_notification(
+				'Candidature ajoutée !',
+				'Vous êtes maintenant candidat au projet.',
+				'success'
+			));
+		}
+		else
+		{
+			push_notif(new_notification(
+				'Candidature refusée !',
+				'Une erreur est survenue. Contactez un administrateur.',
+				'danger'
+			));
+		}
+	}
+
+	return redirect('/', $app);
 });
 
 /*
@@ -439,5 +480,18 @@ $app->get('/about', function (Silex\Application $app) use($twig) {
 $app->get('/report', function (Silex\Application $app) use($twig) {
 	return 'Bug report page'; // TODO
 });
+
+function notif_n_redirect($notif, $path, $app){
+	push_notif($notif);
+	return redirect($path, $app);
+}
+
+
+function redirect($path, $app)
+{
+	$sub_request = Request::create($path, 'GET');
+	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+}
+
 
 $app->run();

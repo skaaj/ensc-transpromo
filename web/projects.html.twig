@@ -4,22 +4,29 @@
     <div class="row">
       <h3>Liste des projets {% if user.qualite > 1 %} <a href="{{ root_path }}/project/add" class="btn btn-primary" style="margin-left:10px;"><span class="glyphicon glyphicon-plus"></span> Nouveau</a> {% endif %}</h3>
       <div class="list-group">
-      {% for p in projects %}
-        {% if p.nb_cand <= 3 %}
-        {% set color = 'success' %}
-        {% elseif p.nb_cand >= 4 %}
-        {% set color = 'warning' %}
-        {% elseif p.nb_cand >= 6 %}
-        {% set color = 'danger' %}
-        {% endif %}
+      {% if projects is empty %}
         <a href="{{ root_path }}/project/{{ p.id_proj }}" class="list-group-item">
-          <h4 class="list-group-item-heading">{{ p.titre }} <span class="badge badge-{{ color }}">{{ p.nb_cand }}/6</span></h4>
-          <p class="list-group-item-text">
-            {{ p.desc_travail }}
-          </p>
-          {% if owner.id_proj == p.id_proj %} <a href="{{ root_path }}/project/edit/{{ p.id_proj }}" class="btn btn-primary btn-sm">Éditer</a> {% endif %}
+            <p class="list-group-item-text">
+              Il n'y a aucun projet pour le moment.
+            </p>
         </a>
-      {% endfor %}
+      {% else %}
+        {% for p in projects %}
+          {% if p.nb_cand <= 3 %}
+          {% set color = 'success' %}
+          {% elseif p.nb_cand >= 4 %}
+          {% set color = 'warning' %}
+          {% elseif p.nb_cand >= 6 %}
+          {% set color = 'danger' %}
+          {% endif %}
+          <a href="{{ root_path }}/project/{{ p.id_proj }}" class="list-group-item">
+            <h4 class="list-group-item-heading">{{ p.titre }} <span class="badge badge-{{ color }}">{{ p.nb_cand }}/6</span></h4>
+            <p class="list-group-item-text">
+              {{ p.desc_travail }}
+            </p>
+          </a>
+        {% endfor %}
+      {% endif %}
       </div>
     </div>
 {% endblock %}

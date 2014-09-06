@@ -73,11 +73,30 @@ class Database {
 
     public function get_owned_project($id)
     {
-        $sql = 'SELECT id_proj FROM projet WHERE id_user_cre = ?';
+        $sql = 'SELECT id_proj, nom, prenom FROM projet 
+                LEFT JOIN utilisateur ON id_user = id_user_cre
+                WHERE id_user_cre = ?';
         $query = $this->pdo->prepare($sql);
         $query->execute(array($id));
 
         return $this->fetch_one($query);
+    }
+
+    public function has_already_project($id)
+    {
+        $sql = 'SELECT id_user FROM utilisateur
+                WHERE id_user = ?
+                AND
+                (
+                id_user
+                IN (SELECT id_user_cand FROM candidature WHERE statut = 1)
+                OR id_user 
+                IN (SELECT id_user_cre FROM projet)
+                )'; // wait whaaat ? no time to explain
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_all($query);
     }
 
     public function get_places($id)
@@ -178,6 +197,9 @@ class Database {
 
     public function delete_project($id)
     {
+        $sql = 'UPDATE candidature SET statut = 0 WHERE id_proj_cand = ?';
+        $this->pdo->prepare($sql)->execute(array($id)); // outch fixme !
+
         $sql = 'DELETE FROM projet WHERE id_proj = ?';
         $query = $this->pdo->prepare($sql);
 
@@ -202,5 +224,28 @@ class Database {
         $query = $this->pdo->prepare($sql);
 
         return $query->execute(array($id));
+    }
+
+    public function has_application($user, $project){
+        $sql = 'SELECT id_cand FROM candidature
+        WHERE id_user_cand = ?
+        AND id_proj_cand = ?';
+
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($user, $project));
+
+        return $this->fetch_one($query);
+    }
+
+    public function add_application($motiv, $id_user, $id_project)
+    {
+        if(!has_application($id_user, $id_project)){
+            $sql = 'INSERT INTO candidature VALUES(null, 0, ?, ?, ?)';
+            $query = $this->pdo->prepare($sql);
+
+            return $query->execute(array($motiv, $id_user, $id_project));
+        }
+
+        return false;
     }
 }
