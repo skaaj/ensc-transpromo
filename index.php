@@ -49,7 +49,13 @@ $app->get('/', function(Silex\Application $app) use($twig) {
 	return $twig->render('index.html.twig', $array);
 });
 
-/* REGISTER */
+/*
+  ___ ___ ___ ___ ___ _____ ___ ___ 
+ | _ \ __/ __|_ _/ __|_   _| __| _ \
+ |   / _| (_ || |\__ \ | | | _||   /
+ |_|_\___\___|___|___/ |_| |___|_|_\
+                                    
+*/
 
 // TODO
 $app->get('/register', function () use($twig) {
@@ -70,8 +76,6 @@ $app->post('/register', function(Silex\Application $app) use($twig) {
 		$_POST['skill'],
 		$_POST['public']
 		);
-
-	var_dump($result);
 
 	if($result === 'mail'){
 		push_notif(new_notification(
@@ -103,7 +107,13 @@ $app->post('/register', function(Silex\Application $app) use($twig) {
 	}
 });
 
-/* LOGIN */
+/*
+  _    ___   ___ ___ _  _ 
+ | |  / _ \ / __|_ _| \| |
+ | |_| (_) | (_ || || .` |
+ |____\___/ \___|___|_|\_|
+                          
+*/
 
 $app->get('/login', function () use($twig) {
 	check_notif($array);
@@ -160,9 +170,15 @@ $app->get('/logout', function(Silex\Application $app) use($twig) {
     return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
 });
 
-/* PROJECTS */
+/*
+  ___ ___  ___     _ ___ ___ _____ ___ 
+ | _ \ _ \/ _ \ _ | | __/ __|_   _/ __|
+ |  _/   / (_) | || | _| (__  | | \__ \
+ |_| |_|_\\___/ \__/|___\___| |_| |___/
+                                       
+*/
 
-// list - design
+// GET LIST
 $app->get('/project/', function(Silex\Application $app) use($twig) {
 	get_context($array, $app);
 
@@ -172,7 +188,7 @@ $app->get('/project/', function(Silex\Application $app) use($twig) {
 	return $twig->render('projects.html.twig', $array);
 });
 
-// add (2A) - design 
+// GET ADD
 $app->get('/project/add', function(Silex\Application $app) use($twig) {
 	get_context($array, $app);
 	set_active($array, 'project');
@@ -191,10 +207,151 @@ $app->get('/project/add', function(Silex\Application $app) use($twig) {
 	return $twig->render('project_add.html.twig', $array);
 });
 
-// details - design
+// POST ADD
+$app->post('/project/add', function(Silex\Application $app) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'project');
+
+	if($app['user']['qualite'] < 2){
+		push_notif(new_notification(
+			'Action refusée !',
+			'Vous devez être en deuxième année pour créer un projet.',
+			'warning'
+		));
+
+	    $sub_request = Request::create('/project/', 'GET');
+	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
+
+	$app['database']->insert_project($_POST['title'], $_POST['descr'], $_POST['seek'], $app['user']['id_user']);
+	
+	push_notif(new_notification(
+		'Projet ajouté !',
+		'Vous pouvez maintenant former votre équipe.',
+		'success'
+	));
+
+	$sub_request = Request::create('/project/', 'GET');
+	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+});
+
+// GET EDIT
+$app->get('/project/edit/{id}', function(Silex\Application $app, $id) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'project');
+
+	push($array, 'project', $app['database']->get_project($id));
+
+	if($array['project']['id_user_cre'] != $app['user']['id_user']){
+		push_notif(new_notification(
+			'Action refusée !',
+			'Vous devez être propriétaire du projet que vous souhaitez éditer.',
+			'warning'
+		));
+
+	    $sub_request = Request::create('/project/'.$id, 'GET');
+	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
+
+	return $twig->render('project_edit.html.twig', $array);
+});
+
+// POST EDIT
+$app->post('/project/edit/{id}', function(Silex\Application $app, $id) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'project');
+
+	push($array, 'project', $app['database']->get_project($id));
+
+	if($array['project']['id_user_cre'] != $app['user']['id_user']){
+		push_notif(new_notification(
+			'Action refusée !',
+			'Vous devez être propriétaire du projet que vous souhaitez éditer.',
+			'warning'
+		));
+
+	    $sub_request = Request::create('/project/'.$id, 'GET');
+	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
+
+	$app['database']->edit_project($_POST['title'], $_POST['descr'], $_POST['seek'], $id);
+
+	push_notif(new_notification(
+		'Projet édité !',
+		'N\'éditez pas trop souvent votre projet pour ne pas perdre les autres utilisateurs.',
+		'success'
+	));
+
+	$sub_request = Request::create('/project/', 'GET');
+	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+});
+
+$app->get('/project/delete/{id}', function(Silex\Application $app, $id) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'project');
+
+	push($array, 'project', $app['database']->get_project($id));
+
+	if($array['project']['id_user_cre'] != $app['user']['id_user']){
+		push_notif(new_notification(
+			'Action refusée !',
+			'Vous devez être propriétaire du projet que vous souhaitez supprimer.',
+			'warning'
+		));
+
+	    $sub_request = Request::create('/project/'.$id, 'GET');
+	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
+
+	$app['database']->delete_project($id);
+
+	push_notif(new_notification(
+		'Projet supprimé !',
+		'Votre projet a été supprimé et ne peut pas être récupéré. Cependant cette fonctionnalité pourrait faire l\'objet d\'une mise à jour.',
+		'success'
+	));
+
+	$sub_request = Request::create('/', 'GET');
+	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+});
+
+$app->get('/project/accept/{id}/{cand}', function(Silex\Application $app, $id, $cand) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'project');
+
+	push($array, 'project', $app['database']->get_project($id));
+
+	if($array['project']['id_user_cre'] != $app['user']['id_user']){
+		push_notif(new_notification(
+			'Action refusée !',
+			'Vous devez être propriétaire du projet pour accepter une candidature.',
+			'warning'
+		));
+
+	    $sub_request = Request::create('/project/'.$id, 'GET');
+	    return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+	}
+
+	$app['database']->accept_application($cand);
+
+	push_notif(new_notification(
+		'Candidature acceptée !',
+		'Vous venez d\'ajouter un membre à votre équipe.',
+		'success'
+	));
+
+	$sub_request = Request::create('/', 'GET');
+	return $app->handle($sub_request, HttpKernelInterface::SUB_REQUEST);
+});
+
+// GET PROJECT DETAILS
 $app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
 	get_context($array, $app);
+	
+	if(!empty($app['user']))
+		push($array, 'owner', $app['database']->get_owned_project($app['user']['id_user']));
 
+	push($array, 'applications', $app['database']->get_applications($id));
 	push($array, 'project', $app['database']->get_project($id));
 	push($array, 'count', $app['database']->get_places($id));
 	set_active($array, 'project');
@@ -202,12 +359,18 @@ $app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
 	return $twig->render('project.html.twig', $array);
 });
 
-// apply (1A) - design
+// GET APPLY
 $app->get('/project/apply/{id}', function (Silex\Application $app, $id) use($twig) {
 	return 'Do you really want to apply to '.$id.' project ?';
 });
 
-/* IDEAS */
+/*
+  ___ ___  ___   _   ___ 
+ |_ _|   \| __| /_\ / __|
+  | || |) | _| / _ \\__ \
+ |___|___/|___/_/ \_\___/
+                         
+*/
 
 // list - design
 $app->get('/idea/', function(Silex\Application $app) use($twig) {
@@ -231,16 +394,17 @@ $app->get('/idea/add/', function (Silex\Application $app) use($twig) {
 	return 'Add idea';
 });
 
-/* PROFILE */
+/*
+  ___ ___  ___  ___ ___ _    ___ 
+ | _ \ _ \/ _ \| __|_ _| |  | __|
+ |  _/   / (_) | _| | || |__| _| 
+ |_| |_|_\\___/|_| |___|____|___|
+                                 
+*/
 
 $app->get('/members', function (Silex\Application $app) use($twig) {
 	$members = $app['database']->get_members();
 	return $twig->render('members.html.twig', array('members' => $members));
-});
-
-// 2A
-$app->get('/candidates', function (Silex\Application $app) use($twig) {
-	return 'Candidates list page'; // TODO
 });
 
 // 1A
@@ -248,7 +412,13 @@ $app->get('/applications', function (Silex\Application $app) use($twig) {
 	return 'Applications list page'; // TODO
 });
 
-/* MISC */
+/*
+  __  __ ___ ___  ___ 
+ |  \/  |_ _/ __|/ __|
+ | |\/| || |\__ \ (__ 
+ |_|  |_|___|___/\___|
+                      
+*/
 
 $app->get('/teacher/add/info', function (Silex\Application $app) use($twig) {
 	return 'Add a information'; // TODO

@@ -17,6 +17,7 @@
           <p class="list-group-item-text">
             {{ p.desc_travail }}
           </p>
+          {% if owner.id_proj == p.id_proj %} <a href="{{ root_path }}/project/edit/{{ p.id_proj }}" class="btn btn-primary btn-sm">Éditer</a> {% endif %}
         </a>
       {% endfor %}
       </div>

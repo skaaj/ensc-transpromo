@@ -71,6 +71,15 @@ class Database {
         return $this->fetch_one($query);
     }
 
+    public function get_owned_project($id)
+    {
+        $sql = 'SELECT id_proj FROM projet WHERE id_user_cre = ?';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_one($query);
+    }
+
     public function get_places($id)
     {
         $sql = 'SELECT count(*) AS value FROM candidature
@@ -79,7 +88,7 @@ class Database {
         $query->execute(array($id));
 
         $result = $this->fetch_one($query);
-        $result['percent'] = floor($result['value'] * 100 / 5); // 5 is not always the max though... fixme :)
+        $result['percent'] = floor($result['value'] * 100 / 6); // 6 is not always the max though... fixme :)
 
         if($result['percent'] <= 50)
             $result['ui_color'] = 'success';
@@ -130,8 +139,8 @@ class Database {
         return $this->fetch_one($query);
     }
     
-    public function insert_user($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public){
-
+    public function insert_user($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public)
+    {
         $year = ($year == '1A') ? 1 : 2;
         $public = ($public == 'on') ? 1 : 0;
 
@@ -149,5 +158,49 @@ class Database {
         $query = $this->pdo->prepare($sql);
 
         return $query->execute(array($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public));
+    }
+
+    public function insert_project($title, $desc, $skill, $owner)
+    {
+        $sql = 'INSERT INTO projet VALUES(null, ?, ?, ?, CURDATE(), null, ?, null)';
+        $query = $this->pdo->prepare($sql);
+
+        return $query->execute(array($title, $desc, $skill, $owner));
+    }
+
+    public function edit_project($title, $desc, $skill, $id)
+    {
+        $sql = 'UPDATE projet SET titre = ?, desc_travail = ?, desc_profil = ? WHERE id_proj = ?';
+        $query = $this->pdo->prepare($sql);
+
+        return $query->execute(array($title, $desc, $skill, $id));
+    }
+
+    public function delete_project($id)
+    {
+        $sql = 'DELETE FROM projet WHERE id_proj = ?';
+        $query = $this->pdo->prepare($sql);
+
+        return $query->execute(array($id));
+    }
+
+    public function get_applications($id)
+    {
+        $sql = 'SELECT * FROM candidature
+                LEFT JOIN utilisateur ON id_user_cand = id_user
+                WHERE id_proj_cand = ? AND statut = 0
+                GROUP BY id_user_cand';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_all($query);
+    }
+
+    public function accept_application($id)
+    {
+        $sql = 'UPDATE candidature SET statut = 1 WHERE id_cand = ?';
+        $query = $this->pdo->prepare($sql);
+
+        return $query->execute(array($id));
     }
 }

@@ -5,7 +5,12 @@
       <div class="col-sm-8 col-md-8">
         <div class="jumbotron">
             <div class="jumbotron-contents">
-              <h1>{{ project.titre }}</h1>
+              <h1>{{ project.titre }}
+              {% if owner.id_proj == project.id_proj %}
+                <a href="{{ root_path }}/project/edit/{{ project.id_proj }}" class="btn btn-primary btn-sm" style="margin-left:10px;">Éditer</a>
+                <a href="{{ root_path }}/project/delete/{{ project.id_proj }}" class="btn btn-warning btn-sm">Supprimer</a>
+              {% endif %}
+              </h1>
               <h2>Description</h2>
               <p>{{ project.desc_travail }}</p>
               <h2>Profil recherché</h2>
@@ -18,13 +23,26 @@
             <div class="jumbotron-contents">
               <h2>Places occupées</h2>
               <div class="progress">
-                <div class="progress-bar progress-bar-{{ count.ui_color }}" role="progressbar" aria-valuenow="{{ count.percent }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ count.percent }}%;">{{ count.percent }}%</div>
+                <div class="progress-bar progress-bar-{{ count.ui_color }}" role="progressbar" aria-valuenow="{{ count.percent }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ count.percent }}%;">{{ count.percent }}%</div>
               </div>
               <h2>Informations</h2>
               <p><b>Tuteur</b> : {{ project.tuteur }}</p>
               <p><b>Date de création</b> : {{ project.date_creation|date("d/m/Y") }}</p>
             </div>
         </div>
+      </div>
+    </div>
+    <div class="row" style="margin:0 0 20px 0;">
+      <h3>Candidatures</h3>
+      <div class="panel panel-default">
+        <ul class="list-group">
+        {% for a in applications %}
+          <li class="list-group-item">
+            <h5>{{ a.prenom }} {{ a.nom }} <a href="{{ root_path }}/project/accept/{{ project.id_proj }}/{{ a.id_cand }}" class="btn btn-success btn-sm" style="margin-left:10px;">Accepter</a></h5>
+            <p>{{ a.desc_motiv }}</p>
+          </li>
+        {% endfor %}
+        </ul>
       </div>
     </div>
 {% endblock %}
