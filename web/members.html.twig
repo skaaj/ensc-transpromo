@@ -1,14 +1,46 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>Twig template</title>
-    </head>
-    <body>
-        {% include 'nav.html.twig' %}
-        <ul>
-        {% for m in members %}
-            <li>{{ m.prenom }}</li>
+{% extends "base.html.twig" %}
+
+{% block content %}
+    <div class="row">
+        <h4>Liste des étudiants en première année</h4>
+        <div class="panel-group panel-group-lists collapse in" id="accordion2">
+        {% for m in members.one %}
+            <div class="panel">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ m.id_user }}" class="">
+                      <b>{{ m.prenom}} {{ m.nom }}</b>
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapse{{ m.id_user }}" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <p>{{ m.parcours }}</p>
+                    <p>{{ m.competences }}</p>
+                  </div>
+                </div>
+              </div>
         {% endfor %}
-        </ul>
-    </body>
-</html>
+        </div>
+        <h4>Liste des étudiants en deuxième année</h4>
+        <div class="panel-group panel-group-lists collapse in" id="accordion2">
+        {% for m in members.two %}
+            <div class="panel">
+                <div class="panel-heading">
+                  <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion2" href="#collapse{{ m.id_user }}" class="">
+                      <b>{{ m.prenom}} {{ m.nom }}</b>
+                    </a>
+                  </h4>
+                </div>
+                <div id="collapse{{ m.id_user }}" class="panel-collapse collapse">
+                  <div class="panel-body">
+                    <p>{{ m.parcours }}</p>
+                    <p>{{ m.competences }}</p>
+                  </div>
+                </div>
+              </div>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

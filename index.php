@@ -415,24 +415,67 @@ $app->post('/project/apply/{id}', function (Silex\Application $app, $id) use($tw
 
 // list - design
 $app->get('/idea/', function(Silex\Application $app) use($twig) {
-	$ideas = $app['database']->get_ideas();
-	return $twig->render('ideas.html.twig', array('ideas' => $ideas, 'active' => 'idea'));
+	get_context($array, $app);
+
+	push($array, 'ideas', $app['database']->get_ideas());
+	set_active($array, 'idea');
+
+	return $twig->render('ideas.html.twig', $array);
 });
 
-// details - design
-$app->get('/idea/{id}', function (Silex\Application $app, $id) use($twig) {
-	$idea = $app['database']->get_idea($id);
-	
-	var_dump($idea);
-	
-	if(empty($idea))
-		return 'id '.$id.' can\'t be found';
-	else
-		return $twig->render('idea.html.twig', array('idea' => $idea));
+$app->get('/idea/add', function(Silex\Application $app) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'idea');
+
+	return $twig->render('idea_add.html.twig', $array);
 });
 
-$app->get('/idea/add/', function (Silex\Application $app) use($twig) {
-	return 'Add idea';
+$app->post('/idea/add', function (Silex\Application $app) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'idea');
+
+	$result = $app['database']->insert_idea($_POST['title'], $_POST['desc'], $app['user']['id_user']);
+	
+	if($result){
+		push_notif(new_notification(
+			'Idée ajoutée !',
+			'Vous pouvez maintenant former votre équipe.',
+			'success'
+		));
+	}else{
+		push_notif(new_notification(
+			'Impossible d\'ajouter l\'idée',
+			'Une erreur est survenue lors de l\'ajout de l\'idée.',
+			'danger'
+		));
+	}
+
+	return redirect('/idea/', $app);
+});
+
+$app->get('/idea/adopt/{id}', function (Silex\Application $app, $id) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'idea');
+
+	$can_adopt = $app['database']->has_already_project($app['user']['id_user']);
+	
+	if($can_adopt){
+		$app['database']->transform_idea($id, $app['user']['id_user']);
+
+		push_notif(new_notification(
+			'Idée ajoutée !',
+			'Vous pouvez maintenant former votre équipe.',
+			'success'
+		));
+	}else{
+		push_notif(new_notification(
+			'Impossible d\'ajouter l\'idée',
+			'Une erreur est survenue lors de l\'ajout de l\'idée.',
+			'danger'
+		));
+	}
+
+	return redirect('/idea/', $app);
 });
 
 /*
@@ -443,9 +486,13 @@ $app->get('/idea/add/', function (Silex\Application $app) use($twig) {
                                  
 */
 
-$app->get('/members', function (Silex\Application $app) use($twig) {
-	$members = $app['database']->get_members();
-	return $twig->render('members.html.twig', array('members' => $members));
+$app->get('/members/', function (Silex\Application $app) use($twig) {
+	get_context($array, $app);
+	set_active($array, 'members');
+
+	push($array, 'members', $app['database']->get_members());
+
+	return $twig->render('members.html.twig', $array);
 });
 
 // 1A

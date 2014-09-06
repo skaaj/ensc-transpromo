@@ -136,8 +136,12 @@ class Database {
 
     public function get_members()
     {
-        $sql = 'SELECT * FROM utilisateur WHERE publi_info = 1';
-        return $this->pdo->query($sql)->fetchAll();
+        $sql = 'SELECT * FROM utilisateur WHERE publi_info = 1 AND qualite = 1';
+        $array['one'] = $this->pdo->query($sql)->fetchAll();
+        $sql = 'SELECT * FROM utilisateur WHERE publi_info = 1 AND qualite = 2';
+        $array['two'] = $this->pdo->query($sql)->fetchAll();
+
+        return $array;
     }
 
     public function get_user($id)
@@ -247,5 +251,18 @@ class Database {
         }
 
         return false;
+    }
+
+    public function insert_idea($title, $desc, $user)
+    {
+        $sql = 'INSERT INTO idee VALUES(null, ?, ?, CURDATE(), ?)';
+        $query = $this->pdo->prepare($sql);
+
+        return $query->execute(array($title, $desc, $user));
+    }
+
+    public function transform_idea($idea, $user)
+    {
+        // TODO
     }
 }

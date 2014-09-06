@@ -4,11 +4,10 @@
 <div class="row">
   <div class="col-sm-3 col-md-3"></div>
   <div class="col-sm-6 col-md-6">
-    <form class="form-signin" role="form" action="{{ root_path }}/project/add" method="post">
-      <h2 class="form-signin-heading">Nouveau projet</h2>
+    <form class="form-signin" role="form" action="{{ root_path }}/idea/add" method="post">
+      <h2 class="form-signin-heading">Nouvelle idée</h2>
       <input type="text" name="title" class="form-control" placeholder="Titre" required autofocus>
-      <textarea name="descr" class="form-control" rows="3" placeholder="Description du projet..." required></textarea>
-      <textarea name="seek" class="form-control" rows="3" placeholder="Profils recherchés..." required></textarea>
+      <textarea name="desc" class="form-control" rows="3" placeholder="Description de l'idée..." required></textarea>
       <button class="btn btn-lg btn-primary btn-block" type="submit" style="margin-top:20px;">Créer</button>
     </form>
   </div>
