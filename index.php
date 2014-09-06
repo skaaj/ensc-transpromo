@@ -439,7 +439,7 @@ $app->post('/idea/add', function (Silex\Application $app) use($twig) {
 	if($result){
 		push_notif(new_notification(
 			'Idée ajoutée !',
-			'Vous pouvez maintenant former votre équipe.',
+			'Merci d\'avoir contribué.',
 			'success'
 		));
 	}else{
@@ -464,7 +464,7 @@ $app->get('/idea/adopt/{id}', function (Silex\Application $app, $id) use($twig) 
 
 		push_notif(new_notification(
 			'Idée ajoutée !',
-			'Vous pouvez maintenant former votre équipe.',
+			'Merci d\'avoir contribué.',
 			'success'
 		));
 	}else{
