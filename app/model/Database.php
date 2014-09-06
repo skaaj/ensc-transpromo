@@ -243,7 +243,7 @@ class Database {
 
     public function add_application($motiv, $id_user, $id_project)
     {
-        if(!has_application($id_user, $id_project)){
+        if(!$this->has_application($id_user, $id_project)){
             $sql = 'INSERT INTO candidature VALUES(null, 0, ?, ?, ?)';
             $query = $this->pdo->prepare($sql);
 
