@@ -361,15 +361,16 @@ $app->get('/project/accept/{id}/{cand}', function(Silex\Application $app, $id, $
 // GET PROJECT DETAILS
 $app->get('/project/{id}', function (Silex\Application $app, $id) use($twig) {
 	get_context($array, $app);
+	set_active($array, 'project');
 	
-	if(!empty($app['user']))
+	if(!empty($app['user'])){
 		push($array, 'owner', $app['database']->get_owned_project($app['user']['id_user']));
+		push($array, 'has_application', $app['database']->has_application($app['user']['id_user'], $id));
+		push($array, 'applications', $app['database']->get_applications($id));
+	}
 
-	push($array, 'applications', $app['database']->get_applications($id));
-	push($array, 'has_application', $app['database']->has_application($app['user']['id_user'], $id));
 	push($array, 'project', $app['database']->get_project($id));
 	push($array, 'count', $app['database']->get_places($id));
-	set_active($array, 'project');
 
 	return $twig->render('project.html.twig', $array);
 });
