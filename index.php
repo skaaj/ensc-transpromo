@@ -518,15 +518,15 @@ $app->get('/teacher/add/deadline', function (Silex\Application $app) use($twig) 
 });
 
 $app->get('/cgu', function (Silex\Application $app) use($twig) {
-	return 'CGU page'; // TODO
+	return $twig->render('cgu.html.twig');
 });
 
 $app->get('/about', function (Silex\Application $app) use($twig) {
 	return 'About page'; // TODO
 });
 
-$app->get('/report', function (Silex\Application $app) use($twig) {
-	return 'Bug report page'; // TODO
+$app->get('/contact', function (Silex\Application $app) use($twig) {
+	return $twig->render('contact.html.twig');
 });
 
 function notif_n_redirect($notif, $path, $app){
