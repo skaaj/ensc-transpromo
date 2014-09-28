@@ -2,6 +2,9 @@
 
 namespace Module;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+
 class Idea extends Module {
 
     protected function init_routes()

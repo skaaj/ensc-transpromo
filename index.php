@@ -20,12 +20,7 @@ $loader = new Twig_Loader_Filesystem(__DIR__.'/web/');
 $twig   = new Twig_Environment($loader);
 
 // Instantiations
-$app['database'] = new Model\Database(
-    'localhost',  // host
-    'transpromo', // db
-    'root',       // user
-    'rockmyroot'  // pwd
-);
+$app['database'] = new Model\Database();
 
 // Retrieve user informations
 if(isset($_SESSION['id_user']))
@@ -40,6 +35,7 @@ $register = new Module\Register($app, $twig);
 $login    = new Module\Login($app, $twig);
 $project  = new Module\Project($app, $twig);
 $idea     = new Module\Idea($app, $twig);
+$profile  = new Module\Profile($app, $twig);
 
 /*
   ___ ___  ___  ___ ___ _    ___ 
@@ -59,30 +55,7 @@ $app->get('/members/', function (Silex\Application $app) use($twig) {
 });
 
 $app->get('/emailme/', function (Silex\Application $app) use($twig) {
-		$mail = new \PHPMailer(); // create a new object
-			$mail->IsSMTP(); // enable SMTP
-			$mail->CharSet="UTF-8";
-			$mail->SMTPDebug = 2; // debugging: 1 = errors and messages, 2 = messages only
-			$mail->SMTPAuth = true; // authentication enabled
-			$mail->SMTPSecure = 'tls'; // secure transfer enabled REQUIRED for GMail
-			$mail->Host = "smtp.gmail.com";
-			$mail->Port = 587; // or 587
-			$mail->IsHTML(true);
-			$mail->Username = "assistance.askit@gmail.com";
-			$mail->Password = "askit2014";
-			$mail->SetFrom("noreply@transpromo","benjo le pro");
-			$mail->Subject = "serveur qui marche";
-			$mail->Body = "ok super important";
-			$mail->AddAddress("ben.denom@gmail.com");
-
-			if(!$mail->Send())
-			{
-			  echo "Mailer Error: " . $mail->ErrorInfo;
-			}
-			else
-			{
-			  echo "Message sent!";
-			}
+	send_mail("too late", "to apologize", "ben.denom@gmail.com");
 	return 'okbro';
 });
 

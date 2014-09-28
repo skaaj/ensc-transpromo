@@ -1,0 +1,20 @@
+{% extends "base.html.twig" %}
+
+{% block content %}
+  {% if user.id_user == infos.id_user %}
+    {% set self = true %}
+  {% endif %}
+    <div class="row">
+      <div class="col-sm-12 col-md-12">
+        <div class="jumbotron">
+          <div class="jumbotron-contents">
+            <h2>{{ infos.prenom }} {{ infos.nom }}{% if self %}<a href="{{ root_path }}/profile/edit/{{ infos.id_user }}" class="btn disabled btn-primary btn-sm" style="margin-left:10px;">Éditer</a>{% endif %}</h2>
+            <h4>Parcours</h4> 
+            {{ infos.parcours }}
+            <h4>Compétences</h4> 
+            {{ infos.competences }}
+          </div>
+        </div>
+      </div>
+    </div>
+{% endblock %}

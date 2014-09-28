@@ -6,11 +6,12 @@ class Database {
 
 	protected $pdo;
 
-    public function __construct($host, $database, $user, $password)
+    public function __construct()
     {
         try {
+            $props = parse_ini_file("datasource.ini");
             $this->pdo = new \PDO(
-                'mysql:dbname='.$database.';host='.$host, $user,$password
+                'mysql:dbname='.$props['database'].';host='.$props['host'], $props['user'], $props['password']
             );
             $this->pdo->exec('SET CHARSET UTF8');
         } catch (\PDOException $exception) {
@@ -64,7 +65,7 @@ class Database {
 
     public function get_project($id)
     {
-        $sql = 'SELECT * FROM projet WHERE id_proj = ?';
+        $sql = 'SELECT * FROM projet JOIN utilisateur ON id_user_cre = id_user WHERE id_proj = ?';
         $query = $this->pdo->prepare($sql);
         $query->execute(array($id));
 
@@ -107,7 +108,7 @@ class Database {
         $query->execute(array($id));
 
         $result = $this->fetch_one($query);
-        $result['percent'] = floor($result['value'] * 100 / 6); // 6 is not always the max though... fixme :)
+        $result['percent'] = floor((1+$result['value']) * 100 / 6); // 6 is not always the max though... fixme :)
 
         if($result['percent'] <= 50)
             $result['ui_color'] = 'success';
@@ -162,7 +163,7 @@ class Database {
         return $this->fetch_one($query);
     }
     
-    public function insert_user($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public)
+    public function insert_user($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public, $key)
     {
         $year = ($year == '1A') ? 1 : 2;
         $public = ($public == 'on') ? 1 : 0;
@@ -177,10 +178,20 @@ class Database {
             return 'mail';
         }
 
-        $sql = 'INSERT INTO utilisateur VALUES(null, 1, ?, ?, ?, ?, ?, ?, ?, ?, null)';
+        $sql = 'INSERT INTO utilisateur VALUES(null, 0, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
         $query = $this->pdo->prepare($sql);
 
-        return $query->execute(array($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public));
+        return $query->execute(array($prenom, $nom, $mail, $pwd, $year, $school, $skill, $public, $key));
+    }
+
+    public function confirm_user($key)
+    {
+        $sql = 'UPDATE utilisateur SET actif = 1 WHERE cle = ?';
+        $query = $this->pdo->prepare($sql);
+
+        $query->execute(array($key));
+
+        return $query->rowCount();
     }
 
     public function insert_project($title, $desc, $skill, $owner)
@@ -232,8 +243,8 @@ class Database {
 
     public function has_application($user, $project){
         $sql = 'SELECT id_cand FROM candidature
-        WHERE id_user_cand = ?
-        AND id_proj_cand = ?';
+                WHERE id_user_cand = ?
+                AND id_proj_cand = ?';
 
         $query = $this->pdo->prepare($sql);
         $query->execute(array($user, $project));
@@ -264,5 +275,26 @@ class Database {
     public function transform_idea($idea, $user)
     {
         // TODO
+    }
+
+    public function get_profile($id)
+    {
+        $sql = 'SELECT * FROM utilisateur WHERE id_user = ?';
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_one($query);
+    }
+
+    public function get_team($id)
+    {
+        $sql = 'select * from utilisateur
+                left join candidature on id_user_cand = id_user
+                where candidature.statut = 1 and id_proj_cand = ?';
+
+        $query = $this->pdo->prepare($sql);
+        $query->execute(array($id));
+
+        return $this->fetch_all($query);
     }
 }

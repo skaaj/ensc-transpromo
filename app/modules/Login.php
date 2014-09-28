@@ -2,6 +2,9 @@
 
 namespace Module;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+
 class Login extends Module {
 
     protected function init_routes()
@@ -23,7 +26,7 @@ class Login extends Module {
                 $_SESSION['id_user'] = $user['id_user'];
 
                 push_notif(new_notification(
-                    'Connexion réussi !',
+                    'Connexion réussie !',
                     'Vous pouvez maintenant utiliser le site.',
                     'success'
                 ));

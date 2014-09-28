@@ -2,6 +2,9 @@
 
 namespace Module;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
+
 class Project extends Module {
 
     protected function init_routes()
@@ -195,6 +198,7 @@ class Project extends Module {
                 push($array, 'owner', $this->app['database']->get_owned_project($this->app['user']['id_user']));
                 push($array, 'has_application', $this->app['database']->has_application($this->app['user']['id_user'], $id));
                 push($array, 'applications', $this->app['database']->get_applications($id));
+                push($array, 'team', $this->app['database']->get_team($id));
             }
 
             push($array, 'project', $this->app['database']->get_project($id));

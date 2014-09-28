@@ -22,7 +22,7 @@
           		<li class="dropdown">
 			          <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ user.prenom }} {{ user.nom }} <span class="caret"></span></a>
 			          <ul class="dropdown-menu" role="menu">
-                  <li><a href="#"><span class="glyphicon glyphicon-user"></span> Mon profil</a></li>
+                  <li><a href="{{ root_path }}/profile/{{ user.id_user }}"><span class="glyphicon glyphicon-user"></span> Mon profil</a></li>
 			            <li class="divider"></li>
 			            <li><a href="{{ root_path }}/logout"><span class="glyphicon glyphicon-off"></span> Se déconnecter</a></li>
 			          </ul>

@@ -1,4 +1,5 @@
 <?php
+
 // build an array containing a notification
 function new_notification($title, $message, $type, $action_1 =  null, $target_1 = null, $action_2 = null, $target_2 = null)
 {
@@ -91,4 +92,30 @@ function get_context(&$array, $app)
 {
 	check_notif($array);
 	check_user($array, $app);
+}
+
+function send_mail($subject, $body, $target)
+{
+	$props = parse_ini_file("./app/model/mailsource.ini");
+
+	$mail = new \PHPMailer(); // create a new object
+	$mail->IsSMTP(); // enable SMTP
+	$mail->CharSet="UTF-8";
+	$mail->SMTPDebug = 0; // debugging: 1 = errors and messages, 2 = messages only
+	$mail->SMTPAuth = true; // authentication enabled
+	$mail->SMTPSecure = 'tls'; // secure transfer enabled REQUIRED for GMail
+	$mail->Host = "smtp.gmail.com";
+	$mail->Port = 587; // or 587
+	$mail->IsHTML(true);
+	$mail->Username = $props['email'];
+	$mail->Password = $props['password'];
+	$mail->SetFrom("noreply@transpromo.fr", "Transpromo Mailer");
+	$mail->Subject = $subject;
+	$mail->Body = $body;
+	$mail->AddAddress($target);
+
+	if(!$mail->Send())
+	{
+	  echo "Mailer Error: ".$mail->ErrorInfo;
+	}
 }
